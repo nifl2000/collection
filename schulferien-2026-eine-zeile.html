@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schulferien Deutschland 2026</title>
+    <style>
+        :root {
+            --winter: #3b82f6;
+            --oster: #22c55e;
+            --pfingst: #eab308;
+            --sommer: #f97316;
+            --herbst: #92400e;
+            --weihnachten: #a855f7;
+            --fruehjahr: #06b6d4;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 24px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 1.8rem;
+            color: var(--text);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 12px;
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        /* Month header */
+        .months-header {
+            display: flex;
+            margin-left: 140px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .month-label {
+            flex: 1;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        /* State rows */
+        .state-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+            height: 32px;
+        }
+
+        .state-label {
+            width: 140px;
+            flex-shrink: 0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding-right: 12px;
+            text-align: right;
+            color: var(--text);
+        }
+
+        .timeline {
+            flex: 1;
+            height: 100%;
+            position: relative;
+            background: #f1f5f9;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        /* Vacation bars */
+        .vacation-bar {
+            position: absolute;
+            height: 20px;
+            top: 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            z-index: 1;
+        }
+
+        .vacation-bar:hover {
+            transform: scaleY(1.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            z-index: 10;
+        }
+
+        .vacation-bar.winter { background: var(--winter); }
+        .vacation-bar.fruehjahr { background: var(--fruehjahr); }
+        .vacation-bar.oster { background: var(--oster); }
+        .vacation-bar.pfingst { background: var(--pfingst); }
+        .vacation-bar.sommer { background: var(--sommer); }
+        .vacation-bar.herbst { background: var(--herbst); }
+        .vacation-bar.weihnachten { background: var(--weihnachten); }
+
+        /* Tooltip */
+        .tooltip {
+            position: fixed;
+            background: #1e293b;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.15s;
+            white-space: nowrap;
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+        }
+
+        .tooltip-type {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .tooltip-dates {
+            opacity: 0.85;
+        }
+
+        /* Month boundary lines */
+        .month-boundary {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: #cbd5e1;
+            z-index: 0;
+        }
+
+        /* Today marker */
+        .today-marker {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #ef4444;
+            z-index: 5;
+        }
+
+        .today-label {
+            position: absolute;
+            top: -18px;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            color: #ef4444;
+            white-space: nowrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .state-label {
+                width: 100px;
+                font-size: 0.75rem;
+            }
+            .months-header {
+                margin-left: 100px;
+            }
+            .legend {
+                gap: 10px;
+            }
+            .legend-item {
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 12px;
+            }
+            h1 {
+                font-size: 1.3rem;
+            }
+            .state-label {
+                width: 80px;
+                font-size: 0.7rem;
+            }
+            .months-header {
+                margin-left: 80px;
+            }
+            .month-label {
+                font-size: 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Schulferien Deutschland 2026</h1>
+        <p class="subtitle">Alle 16 Bundesländer im Vergleich</p>
+        
+        <div class="legend">
+            <div class="legend-item"><div class="legend-color" style="background: var(--winter)"></div>Winter</div>
+            <div class="legend-item"><div class="legend-color" style="background: var(--fruehjahr)"></div>Frühjahr</div>
+            <div class="legend-item"><div class="legend-color" style="background: var(--oster)"></div>Ostern</div>
+            <div class="legend-item"><div class="legend-color" style="background: var(--pfingst)"></div>Pfingsten</div>
+            <div class="legend-item"><div class="legend-color" style="background: var(--sommer)"></div>Sommer</div>
+            <div class="legend-item"><div class="legend-color" style="background: var(--herbst)"></div>Herbst</div>
+            <div class="legend-item"><div class="legend-color" style="background: var(--weihnachten)"></div>Weihnachten</div>
+        </div>
+
+        <div class="months-header" id="monthsHeader"></div>
+        <div id="statesContainer"></div>
+    </div>
+
+    <div class="tooltip" id="tooltip">
+        <div class="tooltip-type"></div>
+        <div class="tooltip-dates"></div>
+    </div>
+
+    <script>
+        // Vacation data for all 16 Bundesländer
+        const ferienData = [
+            {
+                name: "Baden-Württemberg",
+                ferien: [
+                    { type: "Oster", start: "2026-03-30", end: "2026-04-11" },
+                    { type: "Pfingst", start: "2026-05-26", end: "2026-06-05" },
+                    { type: "Sommer", start: "2026-07-30", end: "2026-09-12" },
+                    { type: "Herbst", start: "2026-10-26", end: "2026-10-31" },
+                    { type: "Weihnachten", start: "2026-12-23", end: "2027-01-09" }
+                ]
+            },
+            {
+                name: "Bayern",
+                ferien: [
+                    { type: "Frühjahr", start: "2026-02-16", end: "2026-02-20" },
+                    { type: "Oster", start: "2026-03-30", end: "2026-04-10" },
+                    { type: "Pfingst", start: "2026-05-26", end: "2026-06-05" },
+                    { type: "Sommer", start: "2026-08-03", end: "2026-09-14" },
+                    { type: "Herbst", start: "2026-11-02", end: "2026-11-06" },
+                    { type: "Weihnachten", start: "2026-12-24", end: "2027-01-08" }
+                ]
+            },
+            {
+                name: "Berlin",
+                ferien: [
+                    { type: "Winter", start: "2026-02-02", end: "2026-02-07" },
+                    { type: "Oster", start: "2026-03-30", end: "2026-04-10" },
+                    { type: "Pfingst", start: "2026-05-15", end: "2026-05-15" },
+                    { type: "Pfingst", start: "2026-05-26", end: "2026-05-26" },
+                    { type: "Sommer", start: "2026-07-09", end: "2026-08-22" },
+                    { type: "Herbst", start: "2026-10-19", end: "2026-10-31" },
+                    { type: "Weihnachten", start: "2026-12-23", end: "2027-01-02" }
+                ]
+            },
+            {
+                name: "Brandenburg",
+                ferien: [
+                    { type: "Winter", start: "2026-02-02", end: "2026-02-07" },
+                    { type: "Oster", start: "2026-03-30", end: "2026-04-10" },
+                    { type: "Pfingst", start: "2026-05-15", end: "2026-05-15" },
+                    { type: "Pfingst", start: "2026-05-26", end: "2026-05-26" },
+                    { type: "Sommer", start: "2026-07-09", end: "2026-08-22" },
+                    { type: "Herbst", start: "2026-10-19", end: "2026-10-30" },
+                    { type: "Weihnachten", start: "2026-12-23", end: "2027-01-02" }
+                ]
+            },
+            {
+                name: "Bremen",
+                ferien: [
+                    { type: "Winter", start: "2026-02-02", end: "2026-02-03" },
+                    { type: "Oster", start: "2026-03-23", end: "2026-04-07" },
+                    { type: "Pfingst", start: "2026-05-15", end: "2026-05-15" },
+                    { type: "Pfingst", start: "2026-05-26", end: "2026-05-26" },
+                    { type: "Sommer", start: "2026-07-02", end: "2026-08-12" },
+                    { type: "Herbst", start: "2026-10-12", end: "2026-10-24" },
+                    { type: "Weihnachten", start: "2026-12-23", end: "2027-01-09" }
+                ]
+            },
+            {
+                name: "Hamburg",
+                ferien: [
+                    { type: "Winter", start: "2026-01-30", end: "2026-01-30" },
+                    { type: "Frühjahr", start: "2026-03-02", end: "2026-03-13" },
+                    { type: "Pfingst", start: "2026-05-11", end: "2026-05-15" },
+                    { type: "Sommer", start: "2026-07-09", end: "2026-08-19" },
+                    { type: "Herbst", start: "2026-10-19", end: "2026-10-30" },
+                    { type: "Weihnachten", start: "2026-12-21", end: "2027-01-01" }
+                ]
+            },
+            {
+                name: "Hessen",
+                ferien: [
+                    { type: "Oster", start: "2026-03-30", end: "2026-04-10" },
+                    { type: "Sommer", start: "2026-06-29", end: "2026-08-07" },
+                    { type: "Herbst", start: "2026-10-05", end: "2026-10-17" },
+                    { type: "Weihnachten", start: "2026-12-23", end: "2027-01-12" }
+                ]
+            },
+            {
+                name: "Mecklenburg-Vorpommern",
+                ferien: [
+                    { type: "Winter", start: "2026-02-09", end: "2026-02-20" },
+                    { type: "Oster", start: "2026-03-30", end: "2026-04-08" },
+                    { type: "Pfingst", start: "2026-05-15", end: "2026-05-15" },
+                    { type: "Pfingst", start: "2026-05-22", end: "2026-05-26" },
+                    { type: "Sommer", start: "2026-07-13", end: "2026-08-22" },
+                    { type: "Herbst", start: "2026-10-19", end: "2026-10-24" },
+                    { type: "Weihnachten", start: "2026-12-19", end: "2027-01-02" }
+                ]
+            },
+            {
+                name: "Niedersachsen",
+                ferien: [
+                    { type: "Winter", start: "2026-02-02", end: "2026-02-03" },
+                    { type: "Oster", start: "2026-03-23", end: "2026-04-07" },
+                    { type: "Pfingst", start: "2026-05-26", end: "2026-05-26" },
+                    { type: "Sommer", start: "2026-07-02", end: "2026-08-12" },
+                    { type: "Herbst", start: "2026-10-12", end: "2026-10-24" },
+                    { type: "Weihnachten", start: "2026-12-23", end: "2027-01-09" }
+                ]
+            },
+            {
+                name: "Nordrhein-Westfalen",
+                ferien: [
+                    { type: "Oster", start: "2026-03-30", end: "2026-04-11" },
+                    { type: "Pfingst", start: "2026-05-26", end: "2026-05-26" },
+                    { type: "Sommer", start: "2026-07-20", end: "2026-09-01" },
+                    { type: "Herbst", start: "2026-10-17", end: "2026-10-31" },
+                    { type: "Weihnachten", start: "2026-12-23", end: "2027-01-06" }
+                ]
+            },
+            {
+                name: "Rheinland-Pfalz",
+                ferien: [
+                    { type: "Oster", start: "2026-03-30", end: "2026-04-10" },
+                    { type: "Sommer", start: "2026-06-29", end: "2026-08-07" },
+                    { type: "Herbst", start: "2026-10-05", end: "2026-10-16" },
+                    { type: "Weihnachten", start: "2026-12-23", end: "2027-01-08" }
+                ]
+            },
+            {
+                name: "Saarland",
+                ferien: [
+                    { type: "Winter", start: "2026-02-16", end: "2026-02-20" },
+                    { type: "Oster", start: "2026-04-07", end: "2026-04-17" },
+                    { type: "Sommer", start: "2026-06-29", end: "2026-08-07" },
+                    { type: "Herbst", start: "2026-10-05", end: "2026-10-16" },
+                    { type: "Weihnachten", start: "2026-12-21", end: "2026-12-31" }
+                ]
+            },
+            {
+                name: "Sachsen",
+                ferien: [
+                    { type: "Winter", start: "2026-02-09", end: "2026-02-21" },
+                    { type: "Oster", start: "2026-04-03", end: "2026-04-10" },
+                    { type: "Sommer", start: "2026-07-04", end: "2026-08-14" },
+                    { type: "Herbst", start: "2026-10-12", end: "2026-10-24" },
+                    { type: "Weihnachten", start: "2026-12-23", end: "2027-01-02" }
+                ]
+            },
+            {
+                name: "Sachsen-Anhalt",
+                ferien: [
+                    { type: "Winter", start: "2026-01-31", end: "2026-02-06" },
+                    { type: "Oster", start: "2026-03-30", end: "2026-04-04" },
+                    { type: "Pfingst", start: "2026-05-26", end: "2026-05-29" },
+                    { type: "Sommer", start: "2026-07-04", end: "2026-08-14" },
+                    { type: "Herbst", start: "2026-10-19", end: "2026-10-30" },
+                    { type: "Weihnachten", start: "2026-12-21", end: "2027-01-02" }
+                ]
+            },
+            {
+                name: "Schleswig-Holstein",
+                ferien: [
+                    { type: "Oster", start: "2026-03-26", end: "2026-04-10" },
+                    { type: "Sommer", start: "2026-07-04", end: "2026-08-15" },
+                    { type: "Herbst", start: "2026-10-12", end: "2026-10-24" },
+                    { type: "Weihnachten", start: "2026-12-21", end: "2027-01-06" }
+                ]
+            },
+            {
+                name: "Thüringen",
+                ferien: [
+                    { type: "Winter", start: "2026-02-16", end: "2026-02-21" },
+                    { type: "Oster", start: "2026-04-07", end: "2026-04-17" },
+                    { type: "Sommer", start: "2026-07-04", end: "2026-08-14" },
+                    { type: "Herbst", start: "2026-10-12", end: "2026-10-24" },
+                    { type: "Weihnachten", start: "2026-12-23", end: "2027-01-02" }
+                ]
+            }
+        ];
+
+        // Helper functions
+        function parseDate(dateStr) {
+            const [year, month, day] = dateStr.split('-').map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        function getDayOfYear(date) {
+            const start = new Date(date.getFullYear(), 0, 0);
+            const diff = date - start;
+            return Math.floor(diff / (1000 * 60 * 60 * 24));
+        }
+
+        function formatDate(date) {
+            const day = date.getDate();
+            const monthNames = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+            return `${day}. ${monthNames[date.getMonth()]}`;
+        }
+
+        function getTypeClass(type) {
+            const map = {
+                'Winter': 'winter',
+                'Frühjahr': 'fruehjahr',
+                'Oster': 'oster',
+                'Pfingst': 'pfingst',
+                'Sommer': 'sommer',
+                'Herbst': 'herbst',
+                'Weihnachten': 'weihnachten'
+            };
+            return map[type] || 'sommer';
+        }
+
+        // Create month labels
+        function createMonthLabels() {
+            const months = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+            const container = document.getElementById('monthsHeader');
+            
+            months.forEach(month => {
+                const label = document.createElement('div');
+                label.className = 'month-label';
+                label.textContent = month;
+                container.appendChild(label);
+            });
+        }
+
+        // Month boundaries - day of year for first day of each month
+        const monthBoundaries = [
+            { name: 'Jan', day: 1 },
+            { name: 'Feb', day: 32 },
+            { name: 'Mär', day: 60 },
+            { name: 'Apr', day: 91 },
+            { name: 'Mai', day: 121 },
+            { name: 'Jun', day: 152 },
+            { name: 'Jul', day: 182 },
+            { name: 'Aug', day: 213 },
+            { name: 'Sep', day: 244 },
+            { name: 'Okt', day: 274 },
+            { name: 'Nov', day: 305 },
+            { name: 'Dez', day: 335 }
+        ];
+
+        // Create month boundary lines in a timeline
+        function addMonthBoundaries(timeline, yearDays) {
+            monthBoundaries.forEach(month => {
+                const line = document.createElement('div');
+                line.className = 'month-boundary';
+                const leftPercent = (month.day / yearDays) * 100;
+                line.style.left = `${leftPercent}%`;
+                timeline.appendChild(line);
+            });
+        }
+
+        // Create state rows
+        function createStateRows() {
+            const container = document.getElementById('statesContainer');
+            const yearDays = 365; // 2026 is not a leap year
+            
+            ferienData.forEach(state => {
+                const row = document.createElement('div');
+                row.className = 'state-row';
+                
+                // State label
+                const label = document.createElement('div');
+                label.className = 'state-label';
+                label.textContent = state.name;
+                row.appendChild(label);
+                
+                // Timeline
+                const timeline = document.createElement('div');
+                timeline.className = 'timeline';
+                
+                // Add month boundary lines
+                addMonthBoundaries(timeline, yearDays);
+                
+                // Add vacation bars
+                state.ferien.forEach(ferie => {
+                    const startDate = parseDate(ferie.start);
+                    const endDate = parseDate(ferie.end);
+                    
+                    let startDay = getDayOfYear(startDate);
+                    let endDay = getDayOfYear(endDate);
+                    
+                    // Handle dates in 2027
+                    if (ferie.start.startsWith('2027') || ferie.end.startsWith('2027')) {
+                        if (ferie.start.startsWith('2027')) {
+                            startDay = getDayOfYear(parseDate('2026-12-31')) + getDayOfYear(endDate);
+                        }
+                        if (ferie.end.startsWith('2027')) {
+                            endDay = getDayOfYear(parseDate('2026-12-31')) + getDayOfYear(endDate);
+                        }
+                    }
+                    
+                    const bar = document.createElement('div');
+                    bar.className = `vacation-bar ${getTypeClass(ferie.type)}`;
+                    
+                    // Calculate position and width
+                    const leftPercent = (startDay / yearDays) * 100;
+                    const widthPercent = ((endDay - startDay + 1) / yearDays) * 100;
+                    
+                    bar.style.left = `${leftPercent}%`;
+                    bar.style.width = `${Math.max(widthPercent, 0.5)}%`;
+                    
+                    // Tooltip
+                    bar.addEventListener('mouseenter', (e) => {
+                        const tooltip = document.getElementById('tooltip');
+                        tooltip.querySelector('.tooltip-type').textContent = ferie.type + ' ' + state.name;
+                        tooltip.querySelector('.tooltip-dates').textContent = 
+                            `${formatDate(startDate)} - ${formatDate(endDate)}`;
+                        tooltip.classList.add('visible');
+                    });
+                    
+                    bar.addEventListener('mousemove', (e) => {
+                        const tooltip = document.getElementById('tooltip');
+                        tooltip.style.left = e.clientX + 15 + 'px';
+                        tooltip.style.top = e.clientY - 10 + 'px';
+                    });
+                    
+                    bar.addEventListener('mouseleave', () => {
+                        document.getElementById('tooltip').classList.remove('visible');
+                    });
+                    
+                    timeline.appendChild(bar);
+                });
+                
+                row.appendChild(timeline);
+                container.appendChild(row);
+            });
+        }
+
+        // Initialize
+        createMonthLabels();
+        createStateRows();
+    </script>
+</body>
+</html>
